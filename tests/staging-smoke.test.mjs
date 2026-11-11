@@ -83,3 +83,4 @@ test("Catalog Seed Data: Products have required variant dimensions", () => {
   assert.equal(testProduct.variants[0].stock, 30);
   assert.equal(testProduct.basePrice > 0, true);
 });
+

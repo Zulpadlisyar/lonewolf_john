@@ -52,3 +52,4 @@ export async function sendOrderConfirmationEmail(params: SendOrderEmailParams) {
     recipient: params.toEmail,
   };
 }
+

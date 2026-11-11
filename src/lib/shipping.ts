@@ -101,3 +101,4 @@ export function generateMockWaybill(courier: string): string {
   const randomSuffix = Math.floor(1000 + Math.random() * 9000);
   return `STG-${courier.toUpperCase()}-${timestamp}${randomSuffix}`;
 }
+
