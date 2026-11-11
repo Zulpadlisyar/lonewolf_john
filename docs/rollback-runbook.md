@@ -30,3 +30,4 @@ If a database migration caused schema incompatibilities:
 1. Enable `MAINTENANCE_MODE=true` in hosting environment variables to prevent inconsistent order states.
 2. If backward-compatible migration strategy was followed, roll forward with a patch fix rather than destructive rollback.
 3. If data corruption occurred, consult `docs/backup-restore-runbook.md` and reconcile all payment provider transactions first.
+

@@ -35,3 +35,4 @@ If a production database restore is ever required:
 2. Cross-reference order numbers and settlement statuses.
 3. Manually re-apply confirmed paid orders into the database via administrative script.
 4. **NEVER ask customers to pay twice for an order already settled at the gateway.**
+

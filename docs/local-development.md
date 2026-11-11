@@ -52,3 +52,4 @@ Open [http://localhost:3000/api/health](http://localhost:3000/api/health) to ver
 | `npm run build` | Compiles production build |
 | `npm run db:studio`| Launches Prisma Studio GUI for database inspection |
 | `npm run db:seed` | Idempotent synthetic data re-seeding |
+

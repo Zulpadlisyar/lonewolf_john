@@ -22,3 +22,4 @@ This keeps the catalog and brand stories browsable while displaying an informati
 2. **12:00 WIB**: Reconcile orders with Payment Gateway dashboard (match paid transactions vs recorded orders).
 3. **17:00 WIB**: Verify courier booking & tracking update ages (flag orders paid >24h without resi).
 4. **21:00 WIB**: Verify automated daily database backup status.
+

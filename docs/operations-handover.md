@@ -13,3 +13,4 @@ Transfer complete administrative, operational, and technical control of the Lone
 - [ ] **Payment & Courier Accounts**: Midtrans / Xendit and Biteship live merchant credentials confirmed under Owner's legal entity.
 - [ ] **Runbooks Delivery**: All runbooks (`docs/*`) delivered in clean Markdown and shared via secured drive.
 - [ ] **Final Sign-off**: Handover document signed by both parties, concluding the 1-month babysitting window.
+

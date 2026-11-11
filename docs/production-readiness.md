@@ -25,3 +25,4 @@
 - [ ] Restore rehearsal completed and verified in staging database.
 - [ ] Application rollback procedure tested (< 5 minute redeployment of prior build).
 - [ ] Emergency maintenance toggle tested (`CHECKOUT_DISABLED=true`).
+

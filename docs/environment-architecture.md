@@ -29,3 +29,4 @@
 4. QA and Business Owner perform UAT on Staging.
 5. On Release Gate (3 Jan 2027), approved `develop` is merged to `main` with release tag `v1.0.0`.
 6. Production deployment requires explicit manual approval from authorized tech lead/owner.
+
