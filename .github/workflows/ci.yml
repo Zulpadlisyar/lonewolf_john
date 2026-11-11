@@ -1,0 +1,54 @@
+name: CI Quality Gate & Pre-merge Checks
+
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [develop]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality-gate:
+    name: Lint, Typecheck & Quality Checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Verify No Committed Secrets
+        name: Secret Scan
+        run: |
+          echo "Verifying no .env files or private keys are tracked in Git..."
+          if git ls-files | grep -E '\.env$|\.env\.(staging|production)|.*\.pem$|.*\.key$'; then
+            echo "❌ CRITICAL SECURITY ERROR: Secret file detected in repository git index!"
+            exit 1
+          fi
+          echo "✅ Repository index is clean of secrets."
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Validate Prisma Schema
+        run: npx prisma validate
+
+      - name: Typecheck TypeScript
+        run: npm run typecheck
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run Unit & Integration Tests
+        run: npm test
