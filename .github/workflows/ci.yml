@@ -32,7 +32,7 @@ jobs:
         name: Secret Scan
         run: |
           echo "Verifying no .env files or private keys are tracked in Git..."
-          if git ls-files | grep -E '\.env$|\.env\.(staging|production)|.*\.pem$|.*\.key$'; then
+          if git ls-files | grep -E '(^|/)\.env$|(^|/)\.env\.(staging|production|local)$|\.pem$|\.key$'; then
             echo "❌ CRITICAL SECURITY ERROR: Secret file detected in repository git index!"
             exit 1
           fi
