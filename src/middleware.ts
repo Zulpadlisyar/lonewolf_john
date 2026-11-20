@@ -1,6 +1,23 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+/**
+ * Parses an HTTP Basic Authorization header and checks it against the expected
+ * credentials. The password may contain ":" (only the first colon separates).
+ */
+function isAuthorizedBasic(header: string | null, user: string, pass: string): boolean {
+  if (!header || !header.startsWith("Basic ")) return false;
+  let decoded: string;
+  try {
+    decoded = atob(header.slice("Basic ".length).trim());
+  } catch {
+    return false;
+  }
+  const separator = decoded.indexOf(":");
+  if (separator === -1) return false;
+  return decoded.slice(0, separator) === user && decoded.slice(separator + 1) === pass;
+}
+
 export function middleware(req: NextRequest) {
   const isStaging = process.env.APP_ENV === "staging";
   const { pathname } = req.nextUrl;
@@ -15,23 +32,22 @@ export function middleware(req: NextRequest) {
 
   // 2. Enforce Free Staging Access Restriction via HTTP Basic Auth
   if (isStaging && !isPublicRoute) {
-    const basicAuth = req.headers.get("authorization");
+    const expectedUser = process.env.STAGING_AUTH_USER;
+    const expectedPass = process.env.STAGING_AUTH_PASS;
 
-    // Default staging credentials if not overridden in platform secrets
-    const expectedUser = process.env.STAGING_AUTH_USER || "lonewolf";
-    const expectedPass = process.env.STAGING_AUTH_PASS || "staging2026";
+    // Fail closed: staging is never open when credentials are not configured.
+    if (!expectedUser || !expectedPass) {
+      return new NextResponse("Staging access credentials are not configured.", {
+        status: 503,
+        headers: { "X-Robots-Tag": "noindex, nofollow, noarchive" },
+      });
+    }
 
-    if (basicAuth) {
-      const authValue = basicAuth.split(" ")[1];
-      if (authValue) {
-        const [user, pwd] = Buffer.from(authValue, "base64").toString().split(":");
-        if (user === expectedUser && pwd === expectedPass) {
-          const response = NextResponse.next();
-          response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
-          response.headers.set("X-Environment", "staging");
-          return response;
-        }
-      }
+    if (isAuthorizedBasic(req.headers.get("authorization"), expectedUser, expectedPass)) {
+      const response = NextResponse.next();
+      response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
+      response.headers.set("X-Environment", "staging");
+      return response;
     }
 
     return new NextResponse("Authentication required for LoneWolf Staging Environment.", {
@@ -64,4 +80,3 @@ export const config = {
     "/((?!_next/static|_next/image|favicon.ico).*)",
   ],
 };
-

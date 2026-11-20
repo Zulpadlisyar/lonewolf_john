@@ -59,8 +59,7 @@ The entire Staging environment has been engineered to run with **zero recurring 
 
 ## 3. How Staging Protection & Basic Auth Works
 To keep staging 100% free without purchasing Vercel Pro ($20/month for password protection), [src/middleware.ts](file:///Users/zulpadliharahap/Project/lonewolf_john/src/middleware.ts) enforces HTTP Basic Authentication:
-- **Default Username**: `lonewolf` (configurable via `STAGING_AUTH_USER`)
-- **Default Password**: `staging2026` (configurable via `STAGING_AUTH_PASS`)
+- **Credentials are required**: set `STAGING_AUTH_USER` and `STAGING_AUTH_PASS` in the Vercel staging environment. There are no default credentials; if either is missing, every protected route returns `503` and the site stays closed.
 - **Public Whitelist**:
   - `/api/health` (open for monitoring uptime)
   - `/api/webhooks/*` (open for Midtrans webhook callbacks)

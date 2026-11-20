@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { PaymentStatus } from "@prisma/client";
 
 export interface CreatePaymentParams {
   orderNumber: string;
@@ -30,7 +31,36 @@ export function verifyMidtransSignature(
   const { order_id, status_code, gross_amount, signature_key } = payload;
   const rawString = `${order_id}${status_code}${gross_amount}${serverKey}`;
   const computedHash = crypto.createHash("sha512").update(rawString).digest("hex");
-  return computedHash.toLowerCase() === signature_key.toLowerCase();
+  const expected = Buffer.from(computedHash, "utf8");
+  const received = Buffer.from((signature_key ?? "").toLowerCase(), "utf8");
+  return expected.length === received.length && crypto.timingSafeEqual(expected, received);
+}
+
+/**
+ * Maps a verified Midtrans notification to the internal payment status.
+ * Returns null for notifications that do not change payment state.
+ */
+export function mapMidtransPaymentStatus(payload: PaymentWebhookPayload): PaymentStatus | null {
+  switch (payload.transaction_status) {
+    case "settlement":
+      return PaymentStatus.SUCCESS;
+    case "capture":
+      if (payload.fraud_status === "challenge") return PaymentStatus.PENDING;
+      if (payload.fraud_status === "deny") return PaymentStatus.FAILED;
+      return PaymentStatus.SUCCESS;
+    case "pending":
+      return PaymentStatus.PENDING;
+    case "deny":
+    case "cancel":
+      return PaymentStatus.FAILED;
+    case "expire":
+      return PaymentStatus.EXPIRED;
+    case "refund":
+    case "partial_refund":
+      return PaymentStatus.REFUNDED;
+    default:
+      return null;
+  }
 }
 
 /**
